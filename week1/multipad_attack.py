@@ -41,16 +41,23 @@ sorted_msg_list=sorted(msg_list, key=lambda msg: len(msg))
 
 break_point = sorted_msg_list[0]
 break_point_length = len(break_point)
-break_point_msg = "*" * break_point_length
-
+break_point_msg = "*" * (break_point_length/2)
+break_point_msg_list = list(break_point_msg) 
+print ""
+print "break_point %s" % break_point
+print "break_point msg %s" % break_point_msg
 rest_msgs = sorted_msg_list[1:]
 
 for rest_msg in rest_msgs:
      xor_msg = hex_xor(break_point, rest_msg)
-     print "*********************************************************************************"
-     print "msg: %s" % rest_msg
-     print ""
-     print "xor msg: %s" % xor_msg 
-     print "*********************************************************************************"
+     xor_msg_indice = len(xor_msg) / 2
+     for xor_msg_index in xrange(xor_msg_indice):
+         break_char = xor_msg [2 * xor_msg_index : 2 * (xor_msg_index + 1) ]
+	 if int(break_char, 16) >= 65 and int(break_char, 16) <= 90:
+             break_point_msg_list[xor_msg_index] = chr((int(break_char, 16) + 32)) 
+         elif int(break_char, 16) >= 97 and int(break_char, 16) <= 122:
+             break_point_msg_list[xor_msg_index] = chr((int(break_char, 16) - 32)) 
 
-print "brk msg: %s" % break_point
+print ""
+print "After the xor processing for rest 9 messages"
+print "break_point msg %s " % ''.join(break_point_msg_list)
