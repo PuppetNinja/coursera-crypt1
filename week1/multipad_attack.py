@@ -41,23 +41,42 @@ sorted_msg_list=sorted(msg_list, key=lambda msg: len(msg))
 
 break_point = sorted_msg_list[0]
 break_point_length = len(break_point)
-break_point_msg = "*" * (break_point_length/2)
-break_point_msg_list = list(break_point_msg) 
-print ""
-print "break_point %s" % break_point
-print "break_point msg %s" % break_point_msg
-rest_msgs = sorted_msg_list[1:]
 
-for rest_msg in rest_msgs:
-     xor_msg = hex_xor(break_point, rest_msg)
-     xor_msg_indice = len(xor_msg) / 2
-     for xor_msg_index in xrange(xor_msg_indice):
-         break_char = xor_msg [2 * xor_msg_index : 2 * (xor_msg_index + 1) ]
-	 if int(break_char, 16) >= 65 and int(break_char, 16) <= 90:
-             break_point_msg_list[xor_msg_index] = chr((int(break_char, 16) + 32)) 
-         elif int(break_char, 16) >= 97 and int(break_char, 16) <= 122:
-             break_point_msg_list[xor_msg_index] = chr((int(break_char, 16) - 32)) 
+round_cnt = 0
+for msg in msg_list:
+    print "Round %d: " % round_cnt 
+    round_cnt += 1
+     
+    curr_xor_msg = "*" * (break_point_length/2)
+    curr_xor_msg_list = list(curr_xor_msg) 
 
-print ""
-print "After the xor processing for rest 9 messages"
-print "break_point msg %s " % ''.join(break_point_msg_list)
+    curr_key_msg = "*" * (break_point_length/2)
+    curr_key_msg_list = list(curr_key_msg)
+    for rest_msg in msg_list:
+        if rest_msg != msg: 
+            xor_msg = hex_xor(msg, rest_msg)
+            xor_msg_indice = break_point_length / 2
+
+            curr_char_meaningful = True
+            for xor_msg_index in xrange(xor_msg_indice):
+                break_char = xor_msg [2 * xor_msg_index : 2 * (xor_msg_index + 1) ]
+    	        if int(break_char, 16) >= 65 and int(break_char, 16) <= 90:
+                    curr_xor_msg_list[xor_msg_index] = chr((int(break_char, 16) + 32)) 
+                elif int(break_char, 16) >= 97 and int(break_char, 16) <= 122:
+                    curr_xor_msg_list[xor_msg_index] = chr((int(break_char, 16) - 32)) 
+                else:
+                    curr_char_meaningful = False
+
+                if curr_char_meaningful:
+                    msg_char = msg[2 * xor_msg_index : 2 * (xor_msg_index + 1) ].decode('hex')
+                    xor_char = curr_xor_msg_list[xor_msg_index]
+                    key_char = str_xor(msg_char, xor_char)
+                    curr_key_msg_list[xor_msg_index] = key_char 
+                    
+            print "\n"
+            print "".join(curr_xor_msg_list)
+            print "\nCorresponding key"
+            print "".join(curr_key_msg_list)
+
+final_key = ""
+print "proceed with key %s" % final_key
